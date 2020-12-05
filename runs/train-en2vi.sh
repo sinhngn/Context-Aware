@@ -106,7 +106,8 @@ cp ${BASH_SOURCE[0]} $save_dir/train.sh
 
 cmd="python3 -u train.py data-bin/$data_dir
   --task $task
-  --distributed-world-size $gpu_num -s $src_lang -t $tgt_lang
+# --distributed-world-size $gpu_num 
+  -s $src_lang -t $tgt_lang
   --arch $arch
   --optimizer adam --clip-norm 0.0
   --lr-scheduler inverse_sqrt --warmup-init-lr 1e-07 --warmup-updates $warmup
