@@ -6,6 +6,7 @@ device=0,1,2,3
 tag=$1
 dataBin=$2
 save_dir=$3
+pretrained_model=$4
 
 if [ $tag == "baseline" ]; then
         task=translation
@@ -30,7 +31,7 @@ if [ $tag == "baseline" ]; then
 elif [ $tag == "inside-context" ]; then
         task=translation_context
         arch=in_context_transformer_t2t_wmt_en_de
-        pretrained_model=checkpoints/baseline/checkpoint_best.pt
+        pretrained_model=$pretrained_model
         context_layer=1
         share_embedding=0
         share_decoder_input_output_embed=1
@@ -52,7 +53,7 @@ elif [ $tag == "inside-context" ]; then
 elif [ $tag == "outside-context" ]; then
         task=translation_context
         arch=out_context_transformer_t2t_wmt_en_de
-        pretrained_model=checkpoints/baseline/checkpoint_best.pt
+        pretrained_model=$pretrained_model
         context_layer=1
         share_embedding=0
         share_decoder_input_output_embed=1
@@ -74,7 +75,7 @@ elif [ $tag == "outside-context" ]; then
 elif [ $tag == "gaussian" ]; then
         task=translation
         arch=rand_noise_transformer_t2t_wmt_en_de
-        pretrained_model=checkpoints/baseline/checkpoint_best.pt
+        pretrained_model=$pretrained_model
         share_embedding=0
         share_decoder_input_output_embed=1
         criterion=label_smoothed_cross_entropy
@@ -124,7 +125,7 @@ cmd="python3 -u train.py $dataBin
   --ddp-backend no_c10d 
   --save-dir $save_dir
   --keep-last-epochs $keep_last_epochs
-  --tensorboard-logdir $save_dir"
+
 
 cmd=${cmd}" --adam-betas "${adam_betas}
 if [ $share_embedding -eq 1 ]; then
