@@ -24,7 +24,7 @@ if [ $tag == "baseline" ]; then
         max_update=
         data_dir=sent
         src_lang=en
-        tgt_lang=ru
+        tgt_lang=vi
 elif [ $tag == "inside-context" ]; then
         task=translation_context
         arch=in_context_transformer_t2t_wmt_en_de
@@ -46,7 +46,7 @@ elif [ $tag == "inside-context" ]; then
         max_update=
         data_dir=context
         src_lang=en
-        tgt_lang=ru
+        tgt_lang=vi
 elif [ $tag == "outside-context" ]; then
         task=translation_context
         arch=out_context_transformer_t2t_wmt_en_de
@@ -68,7 +68,7 @@ elif [ $tag == "outside-context" ]; then
         max_update=
         data_dir=context
         src_lang=en
-        tgt_lang=ru
+        tgt_lang=vi
 elif [ $tag == "gaussian" ]; then
         task=translation
         arch=rand_noise_transformer_t2t_wmt_en_de
@@ -89,7 +89,7 @@ elif [ $tag == "gaussian" ]; then
         max_update=
         data_dir=sent
         src_lang=en
-        tgt_lang=ru
+        tgt_lang=vi
 else
         echo "unknown tag=$tag"
         exit
