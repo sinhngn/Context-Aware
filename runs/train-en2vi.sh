@@ -125,7 +125,7 @@ cmd="python3 -u train.py $dataBin
   --keep-last-epochs $keep_last_epochs
 
 
-cmd=${cmd}" --adam-betas "${adam_betas}
+cmd=${cmd}" --adam-betas "${adam_betas}"
 if [ $share_embedding -eq 1 ]; then
 cmd=${cmd}" --share-all-embeddings "
 fi
@@ -148,7 +148,7 @@ if [ -n "$pretrained_model" ]; then
 cmd=${cmd}" --pretrained-path ${pretrained_model} "
 fi
 if [ -n "$context_layer" ]; then
-cmd=${cmd}" --context-encoder-layers "${context_layer}"
+cmd=${cmd}" --context-encoder-layers "${context_layer}
 fi
 
 
