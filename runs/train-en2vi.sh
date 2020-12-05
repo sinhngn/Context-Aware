@@ -151,6 +151,6 @@ fi
 
 
 #export CUDA_VISIBLE_DEVICES=$device
-cmd="nohup "${cmd}" >> $save_dir/train.log 2>&1 &"
+#cmd="nohup "${cmd}" >> $save_dir/train.log 2>&1 &"
 eval $cmd
 tail -f $save_dir/train.log
