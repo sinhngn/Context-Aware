@@ -140,16 +140,9 @@ fi
 if [ -n "$dropout" ]; then
 cmd=${cmd}" --dropout "${dropout}
 fi
-if [ $fp16 -eq 1 ]; then
-cmd=${cmd}" FP32 "
-fi
 if [ -n "$pretrained_model" ]; then
 cmd=${cmd}" --pretrained-path ${pretrained_model} "
 fi
 if [ -n "$context_layer" ]; then
-cmd=${cmd}" --context-encoder-layers "${context_layer}
+cmd=${cmd}" --context-encoder-layers ${context_layer}"
 fi
-"
-
-eval $cmd
-tail -f $save_dir/train.log
