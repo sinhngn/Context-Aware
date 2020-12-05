@@ -30,7 +30,7 @@ if [ $tag == "baseline" ]; then
 elif [ $tag == "inside-context" ]; then
         task=translation_context
         arch=in_context_transformer_t2t_wmt_en_de
-        pretrained_model=checkpoints/baseline/checkpoint_best.pt
+        pretrained_model=$checkpoint_dir/baseline/checkpoint_best.pt
         context_layer=1
         share_embedding=0
         share_decoder_input_output_embed=1
@@ -52,7 +52,7 @@ elif [ $tag == "inside-context" ]; then
 elif [ $tag == "outside-context" ]; then
         task=translation_context
         arch=out_context_transformer_t2t_wmt_en_de
-        pretrained_model=checkpoints/baseline/checkpoint_best.pt
+        pretrained_model=$checkpoint_dir/baseline/checkpoint_best.pt
         context_layer=1
         share_embedding=0
         share_decoder_input_output_embed=1
@@ -74,7 +74,7 @@ elif [ $tag == "outside-context" ]; then
 elif [ $tag == "gaussian" ]; then
         task=translation
         arch=rand_noise_transformer_t2t_wmt_en_de
-        pretrained_model=checkpoints/baseline/checkpoint_best.pt
+        pretrained_model=$checkpoint_dir/baseline/checkpoint_best.pt
         share_embedding=0
         share_decoder_input_output_embed=1
         criterion=label_smoothed_cross_entropy
