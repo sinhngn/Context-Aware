@@ -1,10 +1,12 @@
 #! /usr/bin/bash
 set -e
 
+device=0,1,2,3
+
 tag=$1
-dataBin=$2
-save_dir=$3
-pretrained_model_dir=$4
+data_bin_dir=$2
+checkpoint_dir=$3
+
 
 if [ $tag == "baseline" ]; then
         task=translation
@@ -22,14 +24,14 @@ if [ $tag == "baseline" ]; then
         weight_decay=0.0
         keep_last_epochs=1
         max_epoch=30
-        max_update=80000
-        data_dir=$dataBin
+        max_update=100000
+        data_dir=sent
         src_lang=en
-        tgt_lang=vi
+        tgt_lang=ru
 elif [ $tag == "inside-context" ]; then
         task=translation_context
         arch=in_context_transformer_t2t_wmt_en_de
-        pretrained_model=$pretrained_model_dir
+        pretrained_model=$checkpoint_dir"/baseline/checkpoint_best.pt"
         context_layer=1
         share_embedding=0
         share_decoder_input_output_embed=1
@@ -44,14 +46,14 @@ elif [ $tag == "inside-context" ]; then
         weight_decay=0.0
         keep_last_epochs=1
         max_epoch=5
-        max_update=80000
-        data_dir=$dataBin
+        max_update=100000
+        data_dir=context
         src_lang=en
-        tgt_lang=vi
+        tgt_lang=ru
 elif [ $tag == "outside-context" ]; then
         task=translation_context
         arch=out_context_transformer_t2t_wmt_en_de
-        pretrained_model=$pretrained_model_dir
+        pretrained_model=$checkpoint_dir"/baseline/checkpoint_best.pt"
         context_layer=1
         share_embedding=0
         share_decoder_input_output_embed=1
@@ -66,14 +68,14 @@ elif [ $tag == "outside-context" ]; then
         weight_decay=0.0
         keep_last_epochs=1
         max_epoch=5
-        max_update=80000
-        data_dir=$dataBin
+        max_update=100000
+        data_dir=context
         src_lang=en
-        tgt_lang=vi
+        tgt_lang=ru
 elif [ $tag == "gaussian" ]; then
         task=translation
         arch=rand_noise_transformer_t2t_wmt_en_de
-        pretrained_model=$pretrained_model_dir
+        pretrained_model=$checkpoint_dir"/baseline/checkpoint_best.pt"
         share_embedding=0
         share_decoder_input_output_embed=1
         criterion=label_smoothed_cross_entropy
@@ -87,19 +89,16 @@ elif [ $tag == "gaussian" ]; then
         weight_decay=0.0
         keep_last_epochs=1
         max_epoch=10
-        max_update=80000
-        data_dir=$dataBin
+        max_update=100000
+        data_dir=sent
         src_lang=en
-        tgt_lang=vi
+        tgt_lang=ru
 else
         echo "unknown tag=$tag"
         exit
 fi
 
-
-dataBin=$2
-save_dir=$3
-#save_dir=checkpoints/$tag
+save_dir=$checkpoint_dir/$tag
 
 if [ ! -d $save_dir ]; then
         mkdir -p $save_dir
@@ -108,8 +107,9 @@ cp ${BASH_SOURCE[0]} $save_dir/train.sh
 
 #gpu_num=`echo "$device" | awk '{split($0,arr,",");print length(arr)}'`
 
-cmd="python3 -u train.py $dataBin
-  --task $task -s $src_lang -t $tgt_lang
+cmd="python3 -u train.py $data_bin_dir
+  --task $task
+  --distributed-world-size $gpu_num -s $src_lang -t $tgt_lang
   --arch $arch
   --optimizer adam --clip-norm 0.0
   --lr-scheduler inverse_sqrt --warmup-init-lr 1e-07 --warmup-updates $warmup
@@ -123,7 +123,6 @@ cmd="python3 -u train.py $dataBin
   --ddp-backend no_c10d 
   --save-dir $save_dir
   --keep-last-epochs $keep_last_epochs
-
 
 cmd=${cmd}" --adam-betas "${adam_betas}
 if [ $share_embedding -eq 1 ]; then
@@ -141,17 +140,18 @@ fi
 if [ -n "$dropout" ]; then
 cmd=${cmd}" --dropout "${dropout}
 fi
-# if [ $fp16 -eq 1 ]; then
-#       cmd=${cmd}" --fp16 "
-# fi
+if [ $fp16 -eq 1 ]; then
+cmd=${cmd}" FP32 "
+fi
 if [ -n "$pretrained_model" ]; then
-cmd=${cmd}" --pretrained-path ${pretrained_model}"
+cmd=${cmd}" --pretrained-path ${pretrained_model} "
 fi
 if [ -n "$context_layer" ]; then
-cmd=${cmd}" --context-encoder-layers ${context_layer}"
+cmd=${cmd}" --context-encoder-layers "${context_layer}
 fi
 
 
-
+#export CUDA_VISIBLE_DEVICES=$device
+#cmd="nohup "${cmd}" >> $save_dir/train.log 2>&1 &"
 eval $cmd
 tail -f $save_dir/train.log
