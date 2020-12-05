@@ -7,14 +7,13 @@ tag=$1
 data_bin_dir=$2
 checkpoint_dir=$3
 
-
 if [ $tag == "baseline" ]; then
         task=translation
         arch=transformer_t2t_wmt_en_de
         share_embedding=0
         share_decoder_input_output_embed=1
         criterion=label_smoothed_cross_entropy
-        fp16=1
+        fp16=0
         lr=0.0007
         warmup=4000
         dropout=0.3
@@ -25,18 +24,18 @@ if [ $tag == "baseline" ]; then
         keep_last_epochs=1
         max_epoch=30
         max_update=100000
-        data_dir=sent
+        data_dir=$data_bin_dir
         src_lang=en
-        tgt_lang=ru
+        tgt_lang=vi
 elif [ $tag == "inside-context" ]; then
         task=translation_context
         arch=in_context_transformer_t2t_wmt_en_de
-        pretrained_model=$checkpoint_dir"/baseline/checkpoint_best.pt"
+        pretrained_model=checkpoints/baseline/checkpoint_best.pt
         context_layer=1
         share_embedding=0
         share_decoder_input_output_embed=1
         criterion=label_smoothed_cross_entropy
-        fp16=1
+        fp16=0
         lr=0.0001
         warmup=4000
         dropout=0.3
@@ -47,18 +46,18 @@ elif [ $tag == "inside-context" ]; then
         keep_last_epochs=1
         max_epoch=5
         max_update=100000
-        data_dir=context
+        data_dir=$data_bin_dir
         src_lang=en
-        tgt_lang=ru
+        tgt_lang=vi
 elif [ $tag == "outside-context" ]; then
         task=translation_context
         arch=out_context_transformer_t2t_wmt_en_de
-        pretrained_model=$checkpoint_dir"/baseline/checkpoint_best.pt"
+        pretrained_model=checkpoints/baseline/checkpoint_best.pt
         context_layer=1
         share_embedding=0
         share_decoder_input_output_embed=1
         criterion=label_smoothed_cross_entropy
-        fp16=1
+        fp16=0
         lr=0.0001
         warmup=4000
         dropout=0.3
@@ -69,17 +68,17 @@ elif [ $tag == "outside-context" ]; then
         keep_last_epochs=1
         max_epoch=5
         max_update=100000
-        data_dir=context
+        data_dir=$data_bin_dir
         src_lang=en
-        tgt_lang=ru
+        tgt_lang=vi
 elif [ $tag == "gaussian" ]; then
         task=translation
         arch=rand_noise_transformer_t2t_wmt_en_de
-        pretrained_model=$checkpoint_dir"/baseline/checkpoint_best.pt"
+        pretrained_model=checkpoints/baseline/checkpoint_best.pt
         share_embedding=0
         share_decoder_input_output_embed=1
         criterion=label_smoothed_cross_entropy
-        fp16=1
+        fp16=0
         lr=0.0001
         warmup=4000
         dropout=0.3
@@ -90,9 +89,9 @@ elif [ $tag == "gaussian" ]; then
         keep_last_epochs=1
         max_epoch=10
         max_update=100000
-        data_dir=sent
+        data_dir=$data_bin_dir
         src_lang=en
-        tgt_lang=ru
+        tgt_lang=vi
 else
         echo "unknown tag=$tag"
         exit
@@ -108,8 +107,7 @@ cp ${BASH_SOURCE[0]} $save_dir/train.sh
 #gpu_num=`echo "$device" | awk '{split($0,arr,",");print length(arr)}'`
 
 cmd="python3 -u train.py $data_bin_dir
-  --task $task
-  --distributed-world-size $gpu_num -s $src_lang -t $tgt_lang
+  --task $task -s $src_lang -t $tgt_lang
   --arch $arch
   --optimizer adam --clip-norm 0.0
   --lr-scheduler inverse_sqrt --warmup-init-lr 1e-07 --warmup-updates $warmup
@@ -122,7 +120,7 @@ cmd="python3 -u train.py $data_bin_dir
   --log-interval 100
   --ddp-backend no_c10d 
   --save-dir $save_dir
-  --keep-last-epochs $keep_last_epochs
+  --keep-last-epochs $keep_last_epochs"
 
 cmd=${cmd}" --adam-betas "${adam_betas}
 if [ $share_embedding -eq 1 ]; then
@@ -140,9 +138,18 @@ fi
 if [ -n "$dropout" ]; then
 cmd=${cmd}" --dropout "${dropout}
 fi
+if [ $fp16 -eq 1 ]; then
+cmd=${cmd}" --fp16 "
+fi
 if [ -n "$pretrained_model" ]; then
 cmd=${cmd}" --pretrained-path ${pretrained_model} "
 fi
 if [ -n "$context_layer" ]; then
 cmd=${cmd}" --context-encoder-layers "${context_layer}
 fi
+
+
+export CUDA_VISIBLE_DEVICES=$device
+cmd="nohup "${cmd}" >> $save_dir/train.log 2>&1 &"
+eval $cmd
+tail -f $save_dir/train.log
