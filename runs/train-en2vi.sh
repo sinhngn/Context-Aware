@@ -143,7 +143,7 @@ if [ -n "$dropout" ]; then
 cmd=${cmd}" --dropout "${dropout}
 fi
 if [ $fp16 -eq 1 ]; then
-cmd=${cmd}" --fp16 "
+#cmd=${cmd}" --fp16 "
 fi
 if [ -n "$pretrained_model" ]; then
 cmd=${cmd}" --pretrained-path ${pretrained_model} "
