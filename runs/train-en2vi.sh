@@ -102,7 +102,7 @@ if [ ! -d $save_dir ]; then
 fi
 cp ${BASH_SOURCE[0]} $save_dir/train.sh
 
-gpu_num=`echo "$device" | awk '{split($0,arr,",");print length(arr)}'`
+#gpu_num=`echo "$device" | awk '{split($0,arr,",");print length(arr)}'`
 
 cmd="python3 -u train.py data-bin/$data_dir
   --task $task
@@ -149,7 +149,7 @@ cmd=${cmd}" --context-encoder-layers "${context_layer}
 fi
 
 
-export CUDA_VISIBLE_DEVICES=$device
+#export CUDA_VISIBLE_DEVICES=$device
 cmd="nohup "${cmd}" >> $save_dir/train.log 2>&1 &"
 eval $cmd
 tail -f $save_dir/train.log
