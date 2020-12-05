@@ -4,6 +4,8 @@ set -e
 device=0,1,2,3
 
 tag=$1
+dataBin=$2
+save_dir=$3
 
 if [ $tag == "baseline" ]; then
         task=translation
@@ -22,7 +24,7 @@ if [ $tag == "baseline" ]; then
         keep_last_epochs=1
         max_epoch=30
         max_update=80000
-        data_dir=sent
+        data_dir=$dataBin
         src_lang=en
         tgt_lang=vi
 elif [ $tag == "inside-context" ]; then
@@ -44,7 +46,7 @@ elif [ $tag == "inside-context" ]; then
         keep_last_epochs=1
         max_epoch=5
         max_update=80000
-        data_dir=context
+        data_dir=$dataBin
         src_lang=en
         tgt_lang=vi
 elif [ $tag == "outside-context" ]; then
@@ -66,7 +68,7 @@ elif [ $tag == "outside-context" ]; then
         keep_last_epochs=1
         max_epoch=5
         max_update=80000
-        data_dir=context
+        data_dir=$dataBin
         src_lang=en
         tgt_lang=vi
 elif [ $tag == "gaussian" ]; then
@@ -87,7 +89,7 @@ elif [ $tag == "gaussian" ]; then
         keep_last_epochs=1
         max_epoch=10
         max_update=80000
-        data_dir=sent
+        data_dir=$dataBin
         src_lang=en
         tgt_lang=vi
 else
@@ -95,7 +97,10 @@ else
         exit
 fi
 
-save_dir=checkpoints/$tag
+
+dataBin=$2
+save_dir=$3
+#save_dir=checkpoints/$tag
 
 if [ ! -d $save_dir ]; then
         mkdir -p $save_dir
@@ -104,7 +109,7 @@ cp ${BASH_SOURCE[0]} $save_dir/train.sh
 
 #gpu_num=`echo "$device" | awk '{split($0,arr,",");print length(arr)}'`
 
-cmd="python3 -u train.py data-bin/$data_dir
+cmd="python3 -u train.py $dataBin
   --task $task -s $src_lang -t $tgt_lang
   --arch $arch
   --optimizer adam --clip-norm 0.0
