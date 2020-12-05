@@ -148,7 +148,7 @@ if [ -n "$pretrained_model" ]; then
 cmd=${cmd}" --pretrained-path ${pretrained_model} "
 fi
 if [ -n "$context_layer" ]; then
-cmd=${cmd}" --context-encoder-layers "${context_layer}
+cmd=${cmd}" --context-encoder-layers "${context_layer}"
 fi
 
 
