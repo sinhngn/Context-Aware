@@ -149,7 +149,7 @@ fi
 if [ -n "$context_layer" ]; then
 cmd=${cmd}" --context-encoder-layers "${context_layer}
 fi
-
+"
 
 eval $cmd
 tail -f $save_dir/train.log
