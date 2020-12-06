@@ -45,7 +45,7 @@ elif [ $tag == "inside-context" ]; then
         weight_decay=0.0
         keep_last_epochs=1
         max_epoch=5
-        max_update=10000
+        max_update=
         data_dir=$data_bin_dir
         src_lang=en
         tgt_lang=vi
