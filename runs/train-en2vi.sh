@@ -40,7 +40,7 @@ elif [ $tag == "inside-context" ]; then
         warmup=4000
         dropout=0.3
         adam_betas="'(0.9, 0.997)'"
-        max_tokens=4096
+        max_tokens=1024
         update_freq=1
         weight_decay=0.0
         keep_last_epochs=1
