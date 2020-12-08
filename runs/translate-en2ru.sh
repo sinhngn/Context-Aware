@@ -5,7 +5,7 @@ model_root_dir=$2
 
 # set tag
 tag=$1
-databindir =$3
+databindir=$3
 flag=$4
 
 # set device
@@ -38,7 +38,7 @@ model_dir=$model_root_dir/$tag
 checkpoint=checkpoint_best.pt
 
 cmd="python3 -u generate.py
-$databindir 
+$databindir  
 --task $task
 --path $model_dir/$checkpoint
 --gen-subset $who
