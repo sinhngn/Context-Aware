@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 set -e
 
-model_root_dir=checkpoints
+model_root_dir=$3
 
 # set tag
 tag=$1
