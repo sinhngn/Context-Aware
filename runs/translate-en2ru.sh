@@ -1,11 +1,11 @@
 #!/usr/bin/bash
 set -e
 
-model_root_dir=$3
+model_root_dir=$2
 
 # set tag
 tag=$1
-flag=$2
+flag=$3
 
 # set device
 gpu=0
